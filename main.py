@@ -257,23 +257,37 @@ def record_skin_prices_from_collection(cursor, collection_name):
         if skin['Collection'] == collection_name:
             record_skin_prices_history(cursor, skin['name'])
     
-    
-        
+
+""" DELETE """
+
+def delete_prices_from_skin(cursor, skin_name, check = True):
+    print(f'deleting skin prices of: {skin_name}')
+    if check == True:
+        if check_skin_exist_in_db(cursor, skin_name) == False:
+            return
+    cursor.execute("DELETE FROM skin_prices WHERE skin_name = ?", (skin_name,))
 
 
-    
+def delete_prices_from_collection(cursor, collection_name, check = True):
+    print(f'deleting skin prices from collection: {collection_name}')
+    if check == True:
+        if check_collection_exist_in_db(cursor, collection_name) == False:
+            return
+    cursor.execute("DELETE FROM skin_prices WHERE skin_name IN (SELECT skin_name FROM skins WHERE collection_name = ?)", (collection_name,))
+
+
+""" CONFIGS """
+
+def setup(cursor):
+    update_skin_list()
+    add_all_collections(cursor)
+    add_all_types(cursor)
+
 
 conn = sqlite3.connect("database.db")
 cur = conn.cursor()
 
-update_skin_list()
-update_skin_info()
-
-
-
-add_all_collections(cur)
-add_all_types(cur)
-
+setup(cur)
 
 prefered_collections = ['Rival', 'Cursed_souls', 'Empire', 'Project_z9', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Travelers_bag', 'Nightmare', 'Prey', 'Newyear2020', 'Event5years', 'Space_vision', 'Sunstrike', 'Project_pandora', 'Dynasty', 'Subjectx', 'Chameleon', 'Event4years', 'Reforged', 'Assistance', 'Legends', 'Collaboration', 'Competitive', 'Fun_and_sun', 'Nameless', 'Kitsune_dreams', 'Event2years', 'Hot_winter_party_2023', 'Dragon_rise', 'Frosty_chaos', 'Esports', 'Furious', 'Halloween_2019', 'Revival', 'Origin', 'New_year_2021', 'Outcast', 'Winter_fun_2022']
 for collection in prefered_collections:
