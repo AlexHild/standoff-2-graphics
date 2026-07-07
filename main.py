@@ -287,7 +287,7 @@ def setup(cursor):
 conn = sqlite3.connect("database.db")
 cur = conn.cursor()
 
-
+setup(cur)
 
 prefered_collections = ['Rival', 'Cursed_souls', 'Empire', 'Project_z9', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Travelers_bag', 'Nightmare', 'Prey', 'Newyear2020', 'Event5years', 'Space_vision', 'Sunstrike', 'Project_pandora', 'Dynasty', 'Subjectx', 'Chameleon', 'Event4years', 'Reforged', 'Assistance', 'Legends', 'Collaboration', 'Competitive', 'Fun_and_sun', 'Nameless', 'Kitsune_dreams', 'Event2years', 'Hot_winter_party_2023', 'Dragon_rise', 'Frosty_chaos', 'Esports', 'Furious', 'Halloween_2019', 'Revival', 'Origin', 'New_year_2021', 'Outcast', 'Winter_fun_2022']
 for collection in prefered_collections:
