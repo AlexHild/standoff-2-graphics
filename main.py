@@ -257,7 +257,12 @@ def record_skin_prices_from_collection(cursor, collection_name):
         if skin['Collection'] == collection_name:
             record_skin_prices_history(cursor, skin['name'])
     
-    
+
+""" DELETE """
+
+
+
+
 """ CONFIG """
 
 def setup(cursor):
