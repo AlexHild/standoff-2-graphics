@@ -1,90 +1,26 @@
-import requests
 import sqlite3
-import urllib.parse
-import time
-import random
+import api
 
-cookies = {
-    '_ym_uid': '1775584153167443545',
-    '_ym_d': '1775584153',
-    '_ym_visorc': 'w',
-    '_ym_isad': '2',
-}
-
-headers = {
-    'accept': '*/*',
-    'accept-language': 'en-US,en;q=0.9',
-    'priority': 'u=1, i',
-    'referer': 'https://standoff-2.com/shop/?skin=%22Dia+de+Muertos%22+Knife+Case&type=all&rare=all&category=all&collection=all',
-    'sec-ch-ua': '"Not/A)Brand";v="99", "Chromium";v="148"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Linux"',
-    'sec-fetch-dest': 'empty',
-    'sec-fetch-mode': 'cors',
-    'sec-fetch-site': 'same-origin',
-    'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36',
-    # 'cookie': '_ym_uid=1775584153167443545; _ym_d=1775584153; _ym_visorc=w; _ym_isad=2',
-}
-
-params = {
-    'command': 'getStat',
-    'name': '',
-}
-
-collections = set()
-types = set()
-skin_list = {}
-skin_info = {}
 
 """ PRINTS """
 
 def print_all_collections():
-    print(collections)
+    print(api.get_collections())
 
 def print_all_skin_names_from_list():
-    print(skin_list)
+    print(api.get_skin_list())
 
 def print_all_skin_names_from_info():
     temp = []
-    for skin in skin_info:
+    for skin in api.get_skin_info():
         temp.append(skin['name'])
     print(temp)
 
 def print_all_skin_infos():
-    print(skin_info)
+    print(api.get_skin_info())
 
 def print_all_skin_types():
-    print(types)
-
-
-""" UPDATES """
-
-def update_skin_list():
-    global skin_list
-    time.sleep(random.uniform(0.4, 0.8))
-    response = requests.get('https://standoff-2.com/skins.php?command=getNames')
-    if response.status_code == 200:
-        skin_list = response.json()
-        # print(skin_list)
-        print("skin list updated")
-    else:
-        print("fail to load skin list")
-
-def update_skin_info():
-    global skin_info
-    time.sleep(random.uniform(0.4, 0.8))
-    response = requests.get('https://standoff-2.com/skins-new.php?command=getModelInfo')
-    if response.status_code == 200:
-        skin_info = response.json()
-        # print(skin_info)
-        print("skin info updated")
-        global collections
-        for elem in skin_info:
-            collections.add(elem['Collection'])
-            types.add(elem['type'])
-    else:
-        print("fail to load skin info")
-
+    print(api.get_skin_types())
 
 
 """ CHECKS """
@@ -101,10 +37,9 @@ def check_skin_exist_in_db(cursor, skin_name):
         return True
     
 def check_collection_exist_in_site(collection_name, update = True):
-    global collections
     if update == True:
-        update_skin_info()
-    for collection in collections:
+        api.fetch_skin_info()
+    for collection in api.get_collections():
         if collection == collection_name:
             return True
     print(f"no such collection: {collection_name}")
@@ -122,10 +57,9 @@ def check_collection_exist_in_db(cursor, collection_name):
         return True
 
 def check_skin_name_exist_in_site(skin_name, update = True):
-    global skin_info
     if update == True:
-        update_skin_info()
-    for skin in skin_info:
+        api.fetch_skin_info()
+    for skin in api.get_skin_info():
         if skin['name'] == skin_name:
             return True
     print(f"no such skin name in site: {skin_name}")
@@ -145,10 +79,9 @@ def check_skin_type_exist_in_db(cursor, skin_type):
         return True
     
 def check_skin_exist_in_site(skin_name, collection_name, skin_type, update = True):
-    global skin_info
     if update == True:
-        update_skin_info()
-    for skin in skin_info:
+        api.fetch_skin_info()
+    for skin in api.get_skin_info():
         if skin['name'] == skin_name:
             if skin['type'] == skin_type and skin['Collection'] == collection_name:
                 return True
@@ -191,31 +124,28 @@ def add_skin(cursor, skin_name, collection_name, skin_type, check = True, update
     print(f'skin added to db: {skin_name}')
 
 def add_all_collections(cursor):
-    global collections
-    update_skin_info()
+    api.fetch_skin_info()
     # print_all_collections()
-    for collection in collections:
+    for collection in api.get_collections():
         add_collection(cursor, collection, check = False, update = False)
     print("all collection added")
 
 def add_all_types(cursor):
-    global types
-    update_skin_info()
+    api.fetch_skin_info()
     # print_all_skin_types()
-    for type in types:
+    for type in api.get_skin_types():
         if type != '':
             add_skin_type(cursor, type)
     print("all types added")
 
 def add_skins_by_collection(cursor, collection_name, update = True):
     if update == True:
-        update_skin_info()
+        api.fetch_skin_info()
     if check_collection_exist_in_db(cursor, collection_name) == False:
         return
     if check_collection_exist_in_site(collection_name, update = False) == False:
         return
-    global skin_info
-    for skin in skin_info:
+    for skin in api.get_skin_info():
         if skin['Collection'] == collection_name:
             add_skin(cursor, skin['name'], collection_name, skin['type'], check = True, update = False)
     print(f'skins of collection {collection_name} added')
@@ -232,28 +162,21 @@ def record_skin_price(cursor, skin_name, skin_price, recorded_at, check = True):
 def record_skin_prices_history(cursor, skin_name):
     if check_skin_exist_in_db(cursor, skin_name) == False:
             return
-    params['name'] = skin_name
-    encoded_name = urllib.parse.quote(skin_name)
-    headers['referer'] = f'https://standoff-2.com/shop/?skin={encoded_name}&rare=all&category=all&collection=all'
-    time.sleep(2)
-    response = requests.get('https://standoff-2.com/skins-new.php', params=params, cookies=cookies, headers=headers)
-    if response.status_code == 200:
-        skin_prices = response.json()
-        print(f'prices will be added for {skin_name}')
-        for price in skin_prices:
-            record_skin_price(cursor, price['Name'], price['purchase_price'], price['Date'], check = False)
-        print(f'prices are added for {skin_name}')
-    else:
-        print(f'failed to get response from site for {skin_name}')
+    skin_prices = api.fetch_prices_by_skin(skin_name)
+    print(f'prices will be added for {skin_name}')
+    for price in skin_prices:
+        record_skin_price(cursor, price['Name'], price['purchase_price'], price['Date'], check = False)
+    print(f'prices are added for {skin_name}')
+
 
 def record_skin_prices_from_collection(cursor, collection_name):
-    update_skin_info()
+    api.fetch_skin_info()
     if check_collection_exist_in_db(cursor, collection_name) == False:
         return
     if check_collection_exist_in_site(collection_name, update = False) == False:
         return
     print(f'recording skins from {collection_name}')
-    for skin in skin_info:
+    for skin in api.get_skin_info():
         if skin['Collection'] == collection_name:
             record_skin_prices_history(cursor, skin['name'])
     
@@ -279,24 +202,28 @@ def delete_prices_from_collection(cursor, collection_name, check = True):
 """ CONFIGS """
 
 def setup(cursor):
-    update_skin_list()
+    api.fetch_skin_list()
     add_all_collections(cursor)
     add_all_types(cursor)
 
 
-conn = sqlite3.connect("database.db")
-cur = conn.cursor()
 
-setup(cur)
+def main():
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
 
-prefered_collections = ['Rival', 'Cursed_souls', 'Empire', 'Project_z9', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Travelers_bag', 'Nightmare', 'Prey', 'Newyear2020', 'Event5years', 'Space_vision', 'Sunstrike', 'Project_pandora', 'Dynasty', 'Subjectx', 'Chameleon', 'Event4years', 'Reforged', 'Assistance', 'Legends', 'Collaboration', 'Competitive', 'Fun_and_sun', 'Nameless', 'Kitsune_dreams', 'Event2years', 'Hot_winter_party_2023', 'Dragon_rise', 'Frosty_chaos', 'Esports', 'Furious', 'Halloween_2019', 'Revival', 'Origin', 'New_year_2021', 'Outcast', 'Winter_fun_2022']
-for collection in prefered_collections:
-    add_skins_by_collection(cur, collection, update = False)
-    time.sleep(random.uniform(0.4, 0.8))
+    setup(cur)
+
+    prefered_collections = ['Rival', 'Cursed_souls', 'Empire', 'Project_z9', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Travelers_bag', 'Nightmare', 'Prey', 'Newyear2020', 'Event5years', 'Space_vision', 'Sunstrike', 'Project_pandora', 'Dynasty', 'Subjectx', 'Chameleon', 'Event4years', 'Reforged', 'Assistance', 'Legends', 'Collaboration', 'Competitive', 'Fun_and_sun', 'Nameless', 'Kitsune_dreams', 'Event2years', 'Hot_winter_party_2023', 'Dragon_rise', 'Frosty_chaos', 'Esports', 'Furious', 'Halloween_2019', 'Revival', 'Origin', 'New_year_2021', 'Outcast', 'Winter_fun_2022']
+    from random import random
+    from time import time
+    for collection in prefered_collections:
+        add_skins_by_collection(cur, collection, update = False)
+        time.sleep(random.uniform(0.4, 0.8))
 
 
-record_skin_prices_from_collection(cur, 'Rival')
+    record_skin_prices_from_collection(cur, 'Rival')
 
-conn.commit()
-cur.close()
-conn.close()
+    conn.commit()
+    cur.close()
+    conn.close()
