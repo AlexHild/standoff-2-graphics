@@ -268,7 +268,15 @@ def delete_prices_from_skin(cursor, skin_name, check = True):
     cursor.execute("DELETE FROM skin_prices WHERE skin_name = ?", (skin_name,))
 
 
-""" CONFIG """
+def delete_prices_from_collection(cursor, collection_name, check = True):
+    print(f'deleting skin prices from collection: {collection_name}')
+    if check == True:
+        if check_collection_exist_in_db(cursor, collection_name) == False:
+            return
+    cursor.execute("DELETE FROM skin_prices WHERE skin_name IN (SELECT skin_name FROM skins WHERE collection_name = ?)", (collection_name,))
+
+
+""" CONFIGS """
 
 def setup(cursor):
     update_skin_list()
