@@ -260,7 +260,12 @@ def record_skin_prices_from_collection(cursor, collection_name):
 
 """ DELETE """
 
-
+def delete_prices_from_skin(cursor, skin_name, check = True):
+    print(f'deleting skin prices of: {skin_name}')
+    if check == True:
+        if check_skin_exist_in_db(cursor, skin_name) == False:
+            return
+    cursor.execute("DELETE FROM skin_prices WHERE skin_name = ?", (skin_name,))
 
 
 """ CONFIG """
