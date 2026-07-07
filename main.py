@@ -1,7 +1,6 @@
 import sqlite3
 import api
-import random
-import time
+
 
 """ PRINTS """
 
@@ -208,19 +207,23 @@ def setup(cursor):
     add_all_types(cursor)
 
 
-conn = sqlite3.connect("database.db")
-cur = conn.cursor()
 
-setup(cur)
+def main():
+    conn = sqlite3.connect("database.db")
+    cur = conn.cursor()
 
-prefered_collections = ['Rival', 'Cursed_souls', 'Empire', 'Project_z9', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Travelers_bag', 'Nightmare', 'Prey', 'Newyear2020', 'Event5years', 'Space_vision', 'Sunstrike', 'Project_pandora', 'Dynasty', 'Subjectx', 'Chameleon', 'Event4years', 'Reforged', 'Assistance', 'Legends', 'Collaboration', 'Competitive', 'Fun_and_sun', 'Nameless', 'Kitsune_dreams', 'Event2years', 'Hot_winter_party_2023', 'Dragon_rise', 'Frosty_chaos', 'Esports', 'Furious', 'Halloween_2019', 'Revival', 'Origin', 'New_year_2021', 'Outcast', 'Winter_fun_2022']
-for collection in prefered_collections:
-    add_skins_by_collection(cur, collection, update = False)
-    time.sleep(random.uniform(0.4, 0.8))
+    setup(cur)
+
+    prefered_collections = ['Rival', 'Cursed_souls', 'Empire', 'Project_z9', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Travelers_bag', 'Nightmare', 'Prey', 'Newyear2020', 'Event5years', 'Space_vision', 'Sunstrike', 'Project_pandora', 'Dynasty', 'Subjectx', 'Chameleon', 'Event4years', 'Reforged', 'Assistance', 'Legends', 'Collaboration', 'Competitive', 'Fun_and_sun', 'Nameless', 'Kitsune_dreams', 'Event2years', 'Hot_winter_party_2023', 'Dragon_rise', 'Frosty_chaos', 'Esports', 'Furious', 'Halloween_2019', 'Revival', 'Origin', 'New_year_2021', 'Outcast', 'Winter_fun_2022']
+    from random import random
+    from time import time
+    for collection in prefered_collections:
+        add_skins_by_collection(cur, collection, update = False)
+        time.sleep(random.uniform(0.4, 0.8))
 
 
-record_skin_prices_from_collection(cur, 'Rival')
+    record_skin_prices_from_collection(cur, 'Rival')
 
-conn.commit()
-cur.close()
-conn.close()
+    conn.commit()
+    cur.close()
+    conn.close()
