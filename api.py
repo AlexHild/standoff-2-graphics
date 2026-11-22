@@ -29,7 +29,7 @@ def get_collections():
 def fetch_skin_list():
     global skin_list
     time.sleep(random.uniform(0.4, 0.8))
-    response = requests.get('https://standoff-2.com/skins.php?command=getNames')
+    response = requests.get('https://standoff-2.com/skins-new.php?command=getNames')
     if response.status_code == 200:
         skin_list = response.json()
         # print(skin_list)
