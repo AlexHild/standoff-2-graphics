@@ -16,7 +16,7 @@ CREATE TABLE skins (
     skin_name VARCHAR(50) PRIMARY KEY,
     skin_type VARCHAR(30),
     stat_track BOOLEAN NULL,
-    cagr DECIMAL(10, 6) NULL,
+    cagr DECIMAL(10, 6) NULL, -- to-do delete cagr(so useless)
     collection_name VARCHAR(30) NOT NULL,
     CONSTRAINT fk_skin_type FOREIGN KEY (skin_type) REFERENCES skin_types(skin_type)
         ON DELETE CASCADE,
