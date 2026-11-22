@@ -25,7 +25,7 @@ CREATE TABLE skins (
         ON UPDATE CASCADE
 );
 
-CREATE TABLE skin_prices (
+CREATE TABLE skin_prices ( -- to-do buy/sell
     id INT AUTO_INCREMENT PRIMARY KEY,
     skin_name VARCHAR(50) NOT NULL,
     skin_price DECIMAL(10, 2) NOT NULL,
