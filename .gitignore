@@ -3,7 +3,7 @@
 *.db-journal
 
 # my tests
-personal_tests
+personal
 
 # vs code
 .venv
