@@ -49,5 +49,4 @@ def detect_stat_track(skin_name: str):
     for suf in stattrack_end:
         if skin_name.startswith(suf):
             return True
-     
     return False
