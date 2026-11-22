@@ -232,6 +232,9 @@ def setup(cursor):
     add_all_types(cursor)
 
 
+""" MAIN """
+
+
 def main():
     conn = sqlite3.connect("database.db")
     cur = conn.cursor()
