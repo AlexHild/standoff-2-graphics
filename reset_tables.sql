@@ -1,4 +1,4 @@
--- Active: 1783411300644@@127.0.0.1@3306
+-- Active: 1789483527172@@127.0.0.1@3306
 DROP TABLE IF EXISTS skins;
 DROP TABLE IF EXISTS skin_prices;
 DROP TABLE IF EXISTS collection_names;
@@ -15,6 +15,8 @@ CREATE TABLE skin_types (
 CREATE TABLE skins (
     skin_name VARCHAR(50) PRIMARY KEY,
     skin_type VARCHAR(30),
+    stat_track BOOLEAN NULL,
+    cagr DECIMAL(10, 6) NULL,
     collection_name VARCHAR(30) NOT NULL,
     CONSTRAINT fk_skin_type FOREIGN KEY (skin_type) REFERENCES skin_types(skin_type)
         ON DELETE CASCADE,
@@ -36,3 +38,4 @@ CREATE TABLE skin_prices (
 
 CREATE INDEX idx_prices_skin_name ON skin_prices(skin_name);
 CREATE INDEX idx_prices_recorded_at ON skin_prices(recorded_at);
+CREATE INDEX idx_collection_name ON skins(collection_name);
