@@ -1,4 +1,4 @@
-from setup.config import cookies, headers, params
+from config import cookies, headers, params
 import requests
 import urllib.parse
 import time

@@ -3,7 +3,7 @@ import time
 import math
 import sqlite3
 import api
-import setup.filling_skin_data as fd
+import filling_skin_data as fd
 
 all_collections = ['Splash', 'Project_z9', 'Rival', 'Hot_winter_party_2023', 'Fable', 'Space_vision', 'Sunstrike', 'Frosty_chaos', 'Vibe', 'Dragon_rise', 'Event5years', 'Winter_fun_2022', 'Rainbow', 'Chameleon', 'Reforged', 'Halloween_2020', 'Assistance', 'Competitive', 'Nightmare', 'Collaboration', 'Revenge', 'Standoff_2', 'Sharp', 'Prey', 'Newyear2020', 'Esports', 'Kitsune_dreams', 'Flow', 'Scorpion', 'Outcast', 'Revival', 'Fun_and_sun', 'Nameless', 'Origin', 'Project_pandora', 'Shine', 'Joy', 'New_year_2021', 'Furious', 'Legends', 'Event2years', 'Halloween_2019', 'Fireborn', 'Subjectx', 'Empire', 'Dynasty', 'Cursed_souls', 'Travelers_bag', 'Event4years']
 prefered_collections = ['Rival', 'Empire', 'Revenge', 'Halloween_2020', 'Sharp', 'Fable', 'Fireborn', 'Scorpion', 'Nightmare', 'Prey', 'Newyear2020', 'Space_vision', 'Sunstrike', 'Subjectx', 'Reforged', 'Assistance', 'Competitive', 'Fun_and_sun', 'Kitsune_dreams', 'Event2years', 'Esports', 'Furious', 'Halloween_2019', 'Origin', 'Outcast']
