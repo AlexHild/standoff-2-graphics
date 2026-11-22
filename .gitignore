@@ -1,2 +1,6 @@
 # databases
 *.db
+
+# vs code
+.venv
+__pycache__
