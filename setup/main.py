@@ -106,46 +106,6 @@ def check_prices_exist_in_db(cursor, skin_name):
 
 """ ADD NEW ITEM/STATUS INTO DATABASE """
 
-def add_cagr(cursor, skin_name):
-    cursor.execute('''
-        WITH base AS (
-            SELECT
-                (julianday(recorded_at)
-                 - MIN(julianday(recorded_at)) OVER ()) / 365.25 AS t,
-                skin_price
-                skin_price
-            FROM skin_prices
-            WHERE skin_name = ?
-              AND skin_price > 0
-        ),
-        stats AS (
-            SELECT
-                COUNT(*)                AS n,
-                SUM(t)                  AS sum_t,
-                SUM(LN(skin_price))     AS sum_y,
-                SUM(t * LN(skin_price)) AS sum_ty,
-                SUM(t * t)              AS sum_tt
-            FROM base
-        )
-        SELECT
-            (n * sum_ty - sum_t * sum_y) / (n * sum_tt - sum_t * sum_t) AS k
-        FROM stats
-    ''', (skin_name,))
-
-    row = cursor.fetchone()
-    if row is None or row[0] is None:
-        print("cagr dosen't exist")
-        return
-
-    k = row[0]
-    cagr = math.exp(k) - 1
-
-    cursor.execute(
-        'UPDATE skins SET cagr = ? WHERE skin_name = ?',
-        (cagr, skin_name)
-    )
-    return cagr
-
 
 def add_collection(cursor, collection_name, check = True):
     if check == True:
@@ -180,7 +140,7 @@ def add_skin(cursor, skin_name, collection_name, skin_type, check = True):
     if skin_type == '':
         skin_type = None
     is_stat_track = fd.detect_stat_track(skin_name)
-    cursor.execute("INSERT INTO skins(skin_name, skin_type, stat_track, cagr, collection_name) VALUES(?, ?, ?, ?, ?)", (skin_name, skin_type, is_stat_track, 'NULL', collection_name))
+    cursor.execute("INSERT INTO skins(skin_name, skin_type, stat_track, collection_name) VALUES(?, ?, ?, ?)", (skin_name, skin_type, is_stat_track, collection_name))
     print(f'skin added to db: {skin_name}')
 
 def add_all_collections(cursor):
@@ -230,7 +190,6 @@ def record_skin_prices_history(cursor, skin_name):
     print(f'prices will be added for {skin_name}')
     for price in skin_prices:
         record_skin_price(cursor, price['Name'], price['purchase_price'], price['Date'], check = False)
-    add_cagr(cursor, skin_name)
     print(f'prices are added for {skin_name}')
 
 
