@@ -74,7 +74,7 @@ def build_index(df, collections=None):
     return daily
 
 
-def top_skins_by_last_index(df, collections=None, top_n=100, date=None):
+def top_skins_by_last_index(df, collections=None, top_n=100, date=None): # to-do add stat track(true, false, None)
     """
     Топ-N предметов по нормированной цене (price / first_price) на последней дате.
     collections — фильтр по коллекциям
